@@ -1,0 +1,164 @@
+/* Search input styling */
+.search-input {
+  background: rgba(31, 41, 55, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.search-input:focus {
+  background: rgba(31, 41, 55, 0.7);
+}
+
+/* Loading spinner animation */
+.loading-spinner {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 4px solid rgba(59, 130, 246, 0.1);
+  border-top-color: rgba(59, 130, 246, 1);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Company card hover effects */
+.company-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.company-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.06),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.company-card:hover::before {
+  opacity: 1;
+}
+
+/* Company logo container */
+.company-logo {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom right, #ffffff, #f3f4f6);
+}
+
+.company-logo img {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.company-card:hover .company-logo img {
+  transform: scale(1.05);
+}
+
+/* Console tags styling */
+.console-tag {
+  background: rgba(55, 65, 81, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.2s;
+}
+
+.console-tag:hover {
+  background: rgba(55, 65, 81, 0.7);
+  transform: translateY(-1px);
+}
+
+/* Card border glow effect */
+.company-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: linear-gradient(
+    to bottom right,
+    transparent,
+    rgba(var(--company-color-rgb), 0.1)
+  ) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.company-card:hover::after {
+  opacity: 1;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 640px) {
+  .companies-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .companies-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Loading skeleton animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading-skeleton {
+  background: linear-gradient(
+    to right,
+    rgba(55, 65, 81, 0.1) 8%,
+    rgba(55, 65, 81, 0.2) 18%,
+    rgba(55, 65, 81, 0.1) 33%
+  );
+  background-size: 2000px 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Smooth fade-in animation for cards */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.company-card {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Staggered animation delay for cards */
+.company-card:nth-child(1) { animation-delay: 0.1s; }
+.company-card:nth-child(2) { animation-delay: 0.2s; }
+.company-card:nth-child(3) { animation-delay: 0.3s; }
+.company-card:nth-child(4) { animation-delay: 0.4s; }
+.company-card:nth-child(5) { animation-delay: 0.5s; }
+.company-card:nth-child(6) { animation-delay: 0.6s; }
+.company-card:nth-child(7) { animation-delay: 0.7s; }
+.company-card:nth-child(8) { animation-delay: 0.8s; }
