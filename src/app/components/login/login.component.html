@@ -1,88 +1,79 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full space-y-8 relative">
-    <!-- Logo and Title -->
-    <div class="text-center">
-      <img class="mx-auto h-24 w-auto animate-pulse" src="assets/favicon.png" alt="RetroCloud Logo">
-      <h2 class="mt-6 text-3xl font-extrabold text-gray-100">RetroCloud Gaming</h2>
-      <p class="mt-2 text-sm text-gray-400">Sign in to access your retro gaming collection</p>
+<div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-4">
+  <!-- Logo -->
+  <div class="mb-8 text-center">
+    <div class="bg-gray-800 p-4 rounded-2xl mb-4 inline-block">
+      <i class="fas fa-gamepad text-blue-500 text-4xl"></i>
     </div>
+    <h1 class="text-3xl font-bold text-white mb-2">RetroCloud</h1>
+    <p class="text-gray-400">Access your retro gaming collection</p>
+  </div>
 
-    <!-- Login Form -->
-    <form class="mt-8 space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <!-- Login Form -->
+  <div class="w-full max-w-md">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="bg-gray-800/50 rounded-xl p-8 shadow-xl backdrop-blur-sm">
+      <!-- Username -->
+      <div class="mb-6">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i class="fas fa-user text-gray-500"></i>
+          </div>
+          <input type="text"
+                 formControlName="username"
+                 class="w-full bg-gray-700/50 text-gray-100 pl-12 pr-4 py-3 rounded-xl border border-gray-600/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200"
+                 placeholder="Username"
+                 [ngClass]="{ 'border-red-500': submitted && f['username'].errors }">
+        </div>
+        <div *ngIf="submitted && f['username'].errors" class="mt-2 text-sm text-red-500">
+          <div *ngIf="f['username'].errors['required']">Username is required</div>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-6">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i class="fas fa-lock text-gray-500"></i>
+          </div>
+          <input type="password"
+                 formControlName="password"
+                 class="w-full bg-gray-700/50 text-gray-100 pl-12 pr-4 py-3 rounded-xl border border-gray-600/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200"
+                 placeholder="Password"
+                 [ngClass]="{ 'border-red-500': submitted && f['password'].errors }">
+        </div>
+        <div *ngIf="submitted && f['password'].errors" class="mt-2 text-sm text-red-500">
+          <div *ngIf="f['password'].errors['required']">Password is required</div>
+        </div>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="mb-6">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i class="fas fa-user-shield text-gray-500"></i>
+          </div>
+          <select formControlName="role"
+                  class="w-full bg-gray-700/50 text-gray-100 pl-12 pr-4 py-3 rounded-xl border border-gray-600/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200 appearance-none">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-500"></i>
+          </div>
+        </div>
+      </div>
+
       <!-- Error Message -->
-      <div *ngIf="error" class="rounded-md bg-red-500/10 p-4 mb-4">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <i class="fas fa-exclamation-circle text-red-400"></i>
-          </div>
-          <div class="ml-3">
-            <h3 class="text-sm font-medium text-red-400">{{ error }}</h3>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-md shadow-sm -space-y-px">
-        <!-- Username Field -->
-        <div>
-          <label for="username" class="sr-only">Username</label>
-          <input
-            id="username"
-            type="text"
-            formControlName="username"
-            [ngClass]="{ 'border-red-500': submitted && f['username'].errors }"
-            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-gray-100 rounded-t-md bg-gray-800/50 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-            placeholder="Username"
-          >
-        </div>
-
-        <!-- Password Field -->
-        <div>
-          <label for="password" class="sr-only">Password</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            [ngClass]="{ 'border-red-500': submitted && f['password'].errors }"
-            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-gray-100 rounded-b-md bg-gray-800/50 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-            placeholder="Password"
-          >
-        </div>
-      </div>
-
-      <!-- Validation Messages -->
-      <div class="text-sm text-red-400 space-y-1">
-        <div *ngIf="submitted && f['username'].errors?.['required']">
-          Username is required
-        </div>
-        <div *ngIf="submitted && f['password'].errors?.['required']">
-          Password is required
-        </div>
+      <div *ngIf="error" class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+        <p class="text-sm text-red-500">{{ error }}</p>
       </div>
 
       <!-- Submit Button -->
-      <div>
-        <button
-          type="submit"
-          [disabled]="loading"
-          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <i class="fas fa-sign-in-alt text-blue-500 group-hover:text-blue-400"></i>
-          </span>
-          <span *ngIf="!loading">Sign in</span>
-          <span *ngIf="loading" class="flex items-center">
-            <i class="fas fa-spinner fa-spin mr-2"></i>
-            Signing in...
-          </span>
-        </button>
-      </div>
+      <button type="submit"
+              [disabled]="loading"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl transition-colors duration-200 flex items-center justify-center space-x-2">
+        <i *ngIf="loading" class="fas fa-circle-notch fa-spin"></i>
+        <span>Sign in</span>
+      </button>
     </form>
-
-    <!-- Background Effects -->
-    <div class="absolute inset-0 -z-10 overflow-hidden blur-3xl" aria-hidden="true">
-      <div class="absolute inset-0">
-        <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-blue-500 to-purple-500 opacity-10 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
-      </div>
-    </div>
   </div>
 </div>

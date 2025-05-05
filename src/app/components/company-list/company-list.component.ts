@@ -1,61 +1,61 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Company, CompanyService } from '../../services/company.service';
+import { CompanyService, Company } from '../../services/company.service';
+import { SearchStateService } from '../../services/search-state.service';
 
 @Component({
   selector: 'app-company-list',
-  templateUrl: './company-list.component.html',
-  styleUrls: ['./company-list.component.css']
+  templateUrl: './company-list.component.html'
 })
 export class CompanyListComponent implements OnInit {
   companies: Company[] = [];
   filteredCompanies: Company[] = [];
-  isLoading: boolean = true;
+  isLoading = true;
+  error = '';
 
   constructor(
     private companyService: CompanyService,
+    private searchStateService: SearchStateService,
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    this.loadCompanies();
-  }
-
-  private loadCompanies(): void {
-    this.isLoading = true;
+  async ngOnInit() {
     try {
-      this.companies = this.companyService.getCompanies();
+      this.isLoading = true;
+      this.companies = await this.companyService.getCompanies();
       this.filteredCompanies = this.companies;
-    } catch (error) {
-      console.error('Error loading companies:', error);
+      
+      // Subscribe to search term changes
+      this.searchStateService.currentSearchTerm.subscribe(async term => {
+        if (term) {
+          const results = await this.searchStateService.searchAll(term);
+          this.filteredCompanies = results.companies;
+        } else {
+          this.filteredCompanies = this.companies;
+        }
+      });
+
+    } catch (err) {
+      this.error = 'Failed to load companies';
+      console.error(err);
     } finally {
       this.isLoading = false;
     }
   }
 
-  viewConsoles(company: Company): void {
+  async onSearch(term: string) {
+    this.searchStateService.updateSearchTerm(term);
+  }
+
+  viewConsoles(company: Company) {
     this.router.navigate(['/company', company.id, 'consoles']);
   }
 
-  getBorderColor(companyName: string): string {
-    return this.companyService.getCompanyColor(companyName);
+  getCompanyColor(company: Company): string {
+    return this.companyService.getCompanyColor(company);
   }
 
-  getCompanyBackground(company: Company): string {
-    const color = this.companyService.getCompanyColor(company.name);
-    return `linear-gradient(135deg, ${color}10 0%, ${color}05 100%)`;
-  }
-
-  filterCompanies(searchTerm: string): void {
-    if (!searchTerm) {
-      this.filteredCompanies = this.companies;
-      return;
-    }
-
-    const term = searchTerm.toLowerCase();
-    this.filteredCompanies = this.companies.filter(company =>
-      company.name.toLowerCase().includes(term) ||
-      company.description.toLowerCase().includes(term)
-    );
+  getCompanyInitial(company: Company): string {
+    return this.companyService.getCompanyInitial(company);
   }
 }

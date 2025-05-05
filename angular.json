@@ -27,10 +27,15 @@
             "inlineStyleLanguage": "css",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "src/assets/fontawesome/webfonts",
+                "output": "/webfonts"
+              }
             ],
             "styles": [
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "src/assets/fontawesome/css/all.min.css",
               "src/styles.css"
             ],
             "stylePreprocessorOptions": {
@@ -105,5 +110,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

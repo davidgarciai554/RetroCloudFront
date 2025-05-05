@@ -1,65 +1,79 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Game, GameService } from '../../services/game.service';
-import { Console, ConsoleService } from '../../services/console.service';
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
+import { GameService, Game } from '../../services/game.service';
+import { ConsoleService, Console } from '../../services/console.service';
 import { CompanyService } from '../../services/company.service';
+import { SearchStateService } from '../../services/search-state.service';
 
 @Component({
   selector: 'app-game-list',
-  templateUrl: './game-list.component.html',
-  styleUrls: ['./game-list.component.css']
+  templateUrl: './game-list.component.html'
 })
 export class GameListComponent implements OnInit {
   games: Game[] = [];
-  filteredGames: Game[] = [];
   currentConsole?: Console;
-  isLoading: boolean = true;
+  isLoading = true;
 
   constructor(
+    private route: ActivatedRoute,
+    private location: Location,
     private gameService: GameService,
     private consoleService: ConsoleService,
     private companyService: CompanyService,
-    private route: ActivatedRoute,
-    private router: Router
+    private searchStateService: SearchStateService
   ) {}
 
-  ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const consoleId = Number(params['consoleId']);
-      this.loadConsoleAndGames(consoleId);
-    });
+  async ngOnInit() {
+    try {
+      this.isLoading = true;
+      const consoleId = this.route.snapshot.params['consoleId'];
+      
+      // Get console details
+      this.currentConsole = await this.consoleService.getConsole(consoleId);
+      if (!this.currentConsole) {
+        throw new Error('Console not found');
+      }
+
+      // Get games for this console
+      this.games = await this.gameService.getGamesByConsoleId(consoleId);
+
+      // Subscribe to search term changes
+      this.searchStateService.currentSearchTerm.subscribe(async term => {
+        if (term) {
+          const results = await this.searchStateService.searchAll(term);
+          this.games = results.games.filter(game => 
+            game.consoleId === consoleId
+          );
+        } else {
+          this.games = await this.gameService.getGamesByConsoleId(consoleId);
+        }
+      });
+
+    } catch (err) {
+      console.error('Failed to load games:', err);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  private loadConsoleAndGames(consoleId: number): void {
-    this.isLoading = true;
-    this.currentConsole = this.consoleService.getConsoleById(consoleId);
-    
-    if (!this.currentConsole) {
-      this.router.navigate(['/']);
-      return;
+  async downloadGame(game: Game) {
+    try {
+      await this.gameService.downloadGame(game.id);
+      // Handle successful download (e.g., show notification)
+    } catch (err) {
+      console.error('Failed to download game:', err);
+      // Handle error (e.g., show error message)
     }
+  }
 
-    this.games = this.gameService.getGamesByConsoleId(consoleId);
-    this.filteredGames = this.games;
-    this.isLoading = false;
+  getCompanyColor(): string {
+    if (!this.currentConsole) return '#3B82F6';
+    const company = { id: this.currentConsole.companyId, name: '' };
+    return this.companyService.getCompanyColor(company);
   }
 
   goBack(): void {
-    if (this.currentConsole) {
-      this.router.navigate(['/company', this.currentConsole.companyId, 'consoles']);
-    } else {
-      this.router.navigate(['/']);
-    }
-  }
-
-  getGameBackground(game: Game): string {
-    const company = this.companyService.getCompanyById(this.currentConsole?.companyId || 0);
-    const color = this.companyService.getCompanyColor(company?.name || '');
-    return `linear-gradient(135deg, ${color}10 0%, ${color}05 100%)`;
-  }
-
-  getBorderColor(): string {
-    const company = this.companyService.getCompanyById(this.currentConsole?.companyId || 0);
-    return this.companyService.getCompanyColor(company?.name || '');
+    this.location.back();
   }
 }

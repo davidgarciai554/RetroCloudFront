@@ -1,61 +1,72 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Console, ConsoleService } from '../../services/console.service';
-import { Company, CompanyService } from '../../services/company.service';
+import { Location } from '@angular/common';
+import { ConsoleService, Console } from '../../services/console.service';
+import { CompanyService, Company } from '../../services/company.service';
+import { SearchStateService } from '../../services/search-state.service';
 
 @Component({
   selector: 'app-console-list',
-  templateUrl: './console-list.component.html',
-  styleUrls: ['./console-list.component.css']
+  templateUrl: './console-list.component.html'
 })
 export class ConsoleListComponent implements OnInit {
   consoles: Console[] = [];
-  filteredConsoles: Console[] = [];
   currentCompany?: Company;
-  isLoading: boolean = true;
+  isLoading = true;
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private location: Location,
     private consoleService: ConsoleService,
     private companyService: CompanyService,
-    private route: ActivatedRoute,
-    private router: Router
+    private searchStateService: SearchStateService
   ) {}
 
-  ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const companyId = Number(params['companyId']);
-      this.loadCompanyAndConsoles(companyId);
-    });
-  }
+  async ngOnInit() {
+    try {
+      this.isLoading = true;
+      const companyId = this.route.snapshot.params['companyId'];
+      
+      // Get company details
+      this.currentCompany = await this.companyService.getCompany(companyId);
+      if (!this.currentCompany) {
+        throw new Error('Company not found');
+      }
 
-  private loadCompanyAndConsoles(companyId: number): void {
-    this.isLoading = true;
-    this.currentCompany = this.companyService.getCompanyById(companyId);
-    
-    if (!this.currentCompany) {
-      this.router.navigate(['/']);
-      return;
+      // Get consoles for this company
+      this.consoles = await this.consoleService.getConsolesByCompanyId(companyId);
+
+      // Subscribe to search term changes
+      this.searchStateService.currentSearchTerm.subscribe(async term => {
+        if (term) {
+          const results = await this.searchStateService.searchAll(term);
+          this.consoles = results.consoles.filter(console => 
+            console.companyId === companyId
+          );
+        } else {
+          this.consoles = await this.consoleService.getConsolesByCompanyId(companyId);
+        }
+      });
+
+    } catch (err) {
+      console.error('Failed to load consoles:', err);
+    } finally {
+      this.isLoading = false;
     }
-
-    this.consoles = this.consoleService.getConsolesByCompanyId(companyId);
-    this.filteredConsoles = this.consoles;
-    this.isLoading = false;
   }
 
-  viewGames(console: Console): void {
+  viewGames(console: Console) {
     this.router.navigate(['/console', console.id, 'games']);
   }
 
+  getCompanyColor(): string {
+    return this.currentCompany ? 
+      this.companyService.getCompanyColor(this.currentCompany) : 
+      '#3B82F6';
+  }
+
   goBack(): void {
-    this.router.navigate(['/']);
-  }
-
-  getConsoleBackground(console: Console): string {
-    const color = this.companyService.getCompanyColor(this.currentCompany?.name || '');
-    return `linear-gradient(135deg, ${color}10 0%, ${color}05 100%)`;
-  }
-
-  getBorderColor(): string {
-    return this.companyService.getCompanyColor(this.currentCompany?.name || '');
+    this.location.back();
   }
 }

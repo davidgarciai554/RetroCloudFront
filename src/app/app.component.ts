@@ -1,21 +1,19 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
-  selectedRole: string = 'user';
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
 
-  constructor(private router: Router) {}
-
-  onRoleChange(role: string) {
-    this.selectedRole = role;
-  }
-
-  onAddGame() {
-    this.router.navigate(['/upload']);
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

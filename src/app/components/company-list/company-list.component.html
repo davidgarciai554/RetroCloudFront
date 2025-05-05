@@ -1,36 +1,31 @@
-<div class="space-y-8">
+<div class="container mx-auto px-4 py-8">
+  <!-- Search Bar -->
+  <div class="mb-8">
+    <app-search-bar (search)="onSearch($event)"></app-search-bar>
+  </div>
+
   <!-- Company Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     <div *ngFor="let company of filteredCompanies" 
-         class="company-card relative group cursor-pointer"
+         class="cursor-pointer transform transition-all duration-300 hover:-translate-y-1"
          (click)="viewConsoles(company)">
-      
-      <div class="relative overflow-hidden rounded-xl bg-gray-800/90 backdrop-blur-sm shadow-lg 
-                  hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-        
-        <!-- Company Logo -->
-        <div class="h-48 relative overflow-hidden">
-          <img [src]="company.logoUrl" 
-               [alt]="company.name"
-               class="w-full h-full object-contain p-4"
-               onerror="this.src='assets/logos/placeholder.png'">
+      <div class="relative rounded-xl bg-gray-800 shadow-lg hover:shadow-2xl overflow-hidden">
+        <!-- Company Icon -->
+        <div class="h-48 relative flex items-center justify-center"
+             [style.background]="'linear-gradient(135deg, ' + getCompanyColor(company) + '10 0%, ' + getCompanyColor(company) + '05 100%)'">
+          <h2 class="text-6xl font-bold" [style.color]="getCompanyColor(company)">
+            {{ getCompanyInitial(company) }}
+          </h2>
         </div>
 
-        <!-- Company Info -->
-        <div class="p-6 space-y-4">
+        <!-- Company Name -->
+        <div class="p-6">
           <h3 class="text-xl font-bold text-gray-100">{{ company.name }}</h3>
-          <p class="text-gray-400">{{ company.description }}</p>
         </div>
 
-        <!-- Hover Effect Border -->
-        <div class="absolute inset-0 rounded-xl border-2 border-transparent 
-                    group-hover:border-opacity-100 transition-all duration-300"
-             [style.border-color]="getBorderColor(company.name)">
-        </div>
-
-        <!-- Background Gradient -->
-        <div class="absolute inset-0 rounded-xl opacity-10 transition-opacity duration-300 -z-10"
-             [style.background]="getCompanyBackground(company)">
+        <!-- Border Effect -->
+        <div class="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-opacity-100 transition-all duration-300"
+             [style.border-color]="getCompanyColor(company)">
         </div>
       </div>
     </div>
@@ -38,7 +33,7 @@
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="flex justify-center items-center py-12">
-    <div class="loading-spinner"></div>
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
   </div>
 
   <!-- Empty State -->

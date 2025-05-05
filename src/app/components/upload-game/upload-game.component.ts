@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Console, ConsoleService } from '../../services/console.service';
+import { ConsoleService } from '../../services/console.service';
 import { GameService } from '../../services/game.service';
+import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-upload-game',
@@ -11,83 +13,104 @@ import { GameService } from '../../services/game.service';
 })
 export class UploadGameComponent implements OnInit {
   uploadForm: FormGroup;
-  consoles: Console[] = [];
+  consoles: any[] = [];
+  selectedFiles: File[] = [];
   isLoading = false;
-  selectedFile: File | null = null;
+  error = '';
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
+    private router: Router,
     private consoleService: ConsoleService,
     private gameService: GameService,
-    private router: Router
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) {
-    this.uploadForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
-      consoleId: ['', Validators.required],
-      releaseYear: ['', [Validators.required, Validators.min(1970), Validators.max(new Date().getFullYear())]],
-      genre: ['', Validators.required],
-      publisher: ['', Validators.required]
+    this.uploadForm = this.formBuilder.group({
+      consoleId: ['', Validators.required]
     });
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    if (!this.authService.isAdmin()) {
+      this.router.navigate(['/']);
+      return;
+    }
     this.loadConsoles();
   }
 
-  private loadConsoles(): void {
-    this.consoles = this.consoleService.getConsoles();
+  async loadConsoles() {
+    try {
+      // Get all consoles across all companies
+      this.consoles = await this.consoleService.getAllConsoles();
+      // Sort consoles by company name and console name
+      this.consoles.sort((a, b) => {
+        if (a.companyName === b.companyName) {
+          return a.name.localeCompare(b.name);
+        }
+        return a.companyName.localeCompare(b.companyName);
+      });
+    } catch (error) {
+      console.error('Error loading consoles:', error);
+      this.error = 'Failed to load consoles. Please try again.';
+    }
   }
 
-  onFileSelected(event: Event): void {
+  onFilesDrop(event: DragEvent) {
+    event.preventDefault();
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.selectedFiles = [files[0]]; // Only take the first file
+    }
+  }
+
+  onFileSelect(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+      this.selectedFiles = [input.files[0]]; // Only take the first file
     }
   }
 
-  onSubmit(): void {
-    if (this.uploadForm.valid) {
-      this.isLoading = true;
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  removeFile(index: number) {
+    this.selectedFiles = [];
+  }
+
+  async onSubmit() {
+    if (this.uploadForm.invalid || this.selectedFiles.length === 0) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = '';
+
+    try {
+      const consoleId = this.uploadForm.get('consoleId')?.value;
+      const selectedConsole = this.consoles.find(c => c.id === consoleId);
       
-      // Here you would typically make an API call to upload the game
-      // For now, we'll just simulate it with a timeout
-      setTimeout(() => {
-        console.log('Form submitted:', this.uploadForm.value);
-        console.log('Selected file:', this.selectedFile);
-        this.isLoading = false;
-        this.router.navigate(['/console', this.uploadForm.value.consoleId, 'games']);
-      }, 1500);
-    } else {
-      Object.keys(this.uploadForm.controls).forEach(key => {
-        const control = this.uploadForm.get(key);
-        if (control?.invalid) {
-          control.markAsTouched();
-        }
-      });
-    }
-  }
+      if (!selectedConsole) {
+        throw new Error('Selected console not found');
+      }
 
-  goBack(): void {
-    this.router.navigate(['/']);
-  }
+      // Create game data with file name as title
+      const gameData = {
+        consoleId: consoleId,
+        title: this.selectedFiles[0].name.replace(/\.[^/.]+$/, ""), // Remove file extension
+        companyId: selectedConsole.companyId
+      };
 
-  getControlError(controlName: string): string {
-    const control = this.uploadForm.get(controlName);
-    if (control?.errors && control.touched) {
-      if (control.errors['required']) {
-        return 'This field is required';
-      }
-      if (control.errors['minlength']) {
-        return `Minimum length is ${control.errors['minlength'].requiredLength} characters`;
-      }
-      if (control.errors['min']) {
-        return `Minimum value is ${control.errors['min'].min}`;
-      }
-      if (control.errors['max']) {
-        return `Maximum value is ${control.errors['max'].max}`;
-      }
+      await this.gameService.uploadGame(gameData, this.selectedFiles);
+      this.notificationService.show('Game uploaded successfully!', 'success');
+      this.router.navigate(['/console', consoleId, 'games']);
+    } catch (error) {
+      console.error('Error uploading game:', error);
+      this.error = 'Failed to upload game. Please try again.';
+      this.notificationService.show('Failed to upload game. Please try again.', 'error');
+    } finally {
+      this.isLoading = false;
     }
-    return '';
   }
 }

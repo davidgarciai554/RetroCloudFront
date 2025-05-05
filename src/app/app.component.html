@@ -1,48 +1,47 @@
-<div class="min-h-screen bg-gray-900">
-  <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 bg-gray-800/95 backdrop-blur-sm shadow-lg z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <!-- Logo -->
-        <div class="flex items-center space-x-4">
-          <a routerLink="/" class="flex items-center space-x-3 text-gray-100 hover:text-blue-400 transition-colors">
-            <i class="fas fa-gamepad text-2xl text-blue-500"></i>
-            <h1 class="text-2xl font-bold">RetroCloud</h1>
-          </a>
+<app-notification></app-notification>
+
+<!-- Navigation Header -->
+<nav *ngIf="authService.isAuthenticated()" class="bg-gray-800 shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex items-center space-x-3">
+        <a routerLink="/companies" class="flex items-center space-x-2">
+          <i class="fas fa-gamepad text-blue-500 text-2xl"></i>
+          <span class="text-white font-bold text-lg">RetroCloud</span>
+        </a>
+      </div>
+
+      <!-- User Menu -->
+      <div class="flex items-center space-x-4">
+        <!-- Upload Game (Admin Only) -->
+        <a *ngIf="authService.isAdmin()"
+           routerLink="/upload"
+           class="text-gray-300 hover:text-white px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+          <i class="fas fa-upload"></i>
+          <span>Upload Game</span>
+        </a>
+
+        <!-- User Info -->
+        <div *ngIf="authService.currentUserValue" class="flex items-center space-x-2 text-gray-300">
+          <span>Welcome, {{ authService.currentUserValue.username }}</span>
+          <span class="px-2 py-1 rounded-full text-xs bg-gray-700">
+            {{ authService.currentUserValue.role }}
+          </span>
         </div>
 
-        <!-- Right side controls -->
-        <div class="flex items-center space-x-6">
-          <!-- Role Selector -->
-          <app-role-selector
-            [roles]="['user', 'admin']"
-            [selectedRole]="selectedRole"
-            (selectionChange)="onRoleChange($event)"
-            class="min-w-[120px]"
-          ></app-role-selector>
-
-          <!-- Add Game Button (Admin only) -->
-          <button
-            *ngIf="selectedRole === 'admin'"
-            (click)="onAddGame()"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
-          >
-            <i class="fas fa-plus"></i>
-            <span>Add Game</span>
-          </button>
-        </div>
+        <!-- Logout -->
+        <button (click)="logout()"
+                class="text-gray-300 hover:text-white px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
       </div>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <!-- Main Content -->
-  <main class="pt-20 pb-8">
-    <!-- Search Bar -->
-    <app-search-manager></app-search-manager>
-    
-    <!-- Router Outlet -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <router-outlet></router-outlet>
-    </div>
-  </main>
-</div>
+<!-- Main Content -->
+<main class="min-h-screen bg-gray-900">
+  <router-outlet></router-outlet>
+</main>

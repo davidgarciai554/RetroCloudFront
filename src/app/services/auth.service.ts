@@ -24,17 +24,20 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(username: string, password: string): boolean {
+  login(username: string, password: string, role: 'user' | 'admin' = 'user'): boolean {
     // Mock authentication - in a real app, this would make an API call
     if (username && password) {
       const user: User = {
         username,
-        role: username.toLowerCase().includes('admin') ? 'admin' : 'user'
+        role: role // Use the selected role instead of checking username
       };
 
       // Store user details in local storage
       localStorage.setItem('currentUser', JSON.stringify(user));
       this.currentUserSubject.next(user);
+      
+      // Navigate to companies page after successful login
+      this.router.navigate(['/companies']);
       return true;
     }
     return false;

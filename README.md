@@ -1,90 +1,87 @@
+# 🎮 RetroCloud
 
-Built by https://www.blackbox.ai
-
----
-
-```markdown
-# RetroCloud
-
-## Project Overview
-RetroCloud is a modern web application designed to leverage the power of Angular, providing a rich interface for users. Built with the latest technologies, it aims to create a seamless user experience and delightful performance.
-
-## Installation
-
-To set up the project, follow these steps:
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/yourusername/retrocloud.git
-   cd retrocloud
-   ```
-
-2. **Install Dependencies**
-   This project uses npm for dependency management. Run the following command to install all required dependencies:
-   ```bash
-   npm install
-   ```
-
-## Usage
-
-To start the development server, use the following command:
-```bash
-ng serve
-```
-Open your browser and navigate to `http://localhost:4200`. You should see your application running!
-
-To build your application for production, use:
-```bash
-ng build --prod
-```
-
-This will create a `dist/` directory with the compiled application.
-
-## Features
-- Built with Angular 15, utilizing modern frameworks and libraries.
-- Reactive programming support thanks to RxJS.
-- Well-structured and maintainable project leveraging TypeScript.
-- Optimized for performance with lazy loading, Ahead-of-Time (AOT) compilation, and tree shaking.
-
-## Dependencies
-The project has the following main dependencies listed in `package.json`:
-
-- `@angular/animations`: `~15.0.0`
-- `@angular/common`: `~15.0.0`
-- `@angular/compiler`: `~15.0.0`
-- `@angular/core`: `~15.0.0`
-- `@angular/forms`: `~15.0.0`
-- `@angular/platform-browser`: `~15.0.0`
-- `@angular/platform-browser-dynamic`: `~15.0.0`
-- `@angular/router`: `~15.0.0`
-- `rxjs`: `~7.5.0`
-- More dependencies can be found in the `package.json` file.
-
-## Project Structure
-Here’s a brief overview of the project structure:
-```
-retrocloud/
-│
-├── src/                    # Source files
-│   ├── app/                # Angular components and modules
-│   ├── assets/             # Static assets (images, styles, etc.)
-│   ├── environments/        # Environment configurations
-│   ├── styles/             # Global styles
-│   └── index.html          # Main HTML file
-│
-├── angular.json            # Configuration for Angular CLI
-├── package.json            # Project dependencies and scripts
-└── tsconfig.json           # TypeScript configuration
-```
-
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Contributing
-Contributions are welcome! Please submit a pull request for any improvements or bug fixes.
+**RetroCloud** es una plataforma sencilla y cómoda para realizar copias de seguridad de tus juegos en la nube, permitiéndote tener todos tus títulos organizados de manera eficiente por empresas y consolas. 🌥️✨
 
 ---
 
-For any inquiries or feedback, feel free to contact me at your.email@example.com.
-```
-This README.md file provides a detailed overview of the project, including installation instructions, usage guide, features, dependencies, project structure, license information, and contribution guidelines.
+## 🚀 Características principales
+
+- **Copia de seguridad en la nube**  
+  Guarda tus juegos de forma segura y accede a ellos desde cualquier lugar.
+
+- **Organización avanzada**  
+  Clasifica tus juegos fácilmente por empresa y consola, facilitando la gestión y la búsqueda.
+
+- **Sistema de roles de usuario**  
+  - 👩‍💻 **Administradores:** Pueden subir archivos y gestionar el contenido de la plataforma.  
+  - 🕹️ **Usuarios:** Solo pueden descargar los juegos disponibles, asegurando un control seguro y estructurado del acceso.
+
+- **Interfaz intuitiva**  
+  Navegación sencilla y diseño pensado para que encuentres rápidamente lo que buscas.
+
+---
+
+## ✅ Ventajas
+
+- **Acceso rápido y seguro**  
+  Consulta tus juegos desde cualquier dispositivo con conexión a internet.
+
+- **Estructura clara y ordenada**  
+  Evita el desorden y facilita el mantenimiento de tu biblioteca personal.
+
+- **Gestión segura de permisos**  
+  Protege tus archivos con permisos diferenciados, garantizando la integridad de tus copias de seguridad.
+
+---
+
+## 🎯 ¿Por qué elegir RetroCloud?
+
+RetroCloud es la solución ideal para coleccionistas y entusiastas de los videojuegos que buscan mantener su biblioteca organizada y protegida en la nube. Con una interfaz fácil de usar y un sistema robusto de gestión de usuarios, podrás disfrutar de tus juegos favoritos sin complicaciones.
+
+🔒 **Seguridad:** Mantén tus datos a salvo con nuestro sistema en la nube.  
+📂 **Organización:** Encuentra rápidamente cualquier título en tu colección.  
+👥 **Gestión de usuarios:** Roles bien definidos para garantizar control y acceso seguro.
+
+---
+
+## 📂 Cómo empezar
+
+1. **Regístrate en RetroCloud.**  
+   Crea tu cuenta y accede al sistema.
+
+2. **Sube tus juegos.**  
+   Si eres administrador, organiza y respalda tus títulos directamente en la nube.
+
+3. **Descarga y disfruta.**  
+   Si eres usuario, navega por los juegos disponibles y descárgalos fácilmente.
+
+---
+
+## 💻 Tecnologías utilizadas
+
+- **Frontend:** Angular.js  
+- **Backend:** FastAPI 
+- **Base de datos:** SQLite  
+- **Autenticación:** JWT (JSON Web Tokens)  
+- **Hosting:** AWS  
+
+---
+
+## 🛠️ Cómo contribuir
+
+¿Tienes ideas para mejorar RetroCloud? ¡Nos encantaría escucharlas!  
+Sigue estos pasos para colaborar:
+
+1. Realiza un fork de este repositorio.  
+2. Crea una nueva rama para tu funcionalidad o corrección (`git checkout -b feature/nueva-funcionalidad`).  
+3. Haz un pull request y explica tus cambios.
+
+---
+
+## 🤝 Contacto
+
+¿Tienes preguntas o necesitas ayuda? Contáctanos:  
+📧 **Email:** retrocloud@soporte.com  
+🌐 **Sitio web:** [retrocloud.com](https://retrocloud.com)
+
+¡Gracias por confiar en RetroCloud! 🚀🎮

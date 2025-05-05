@@ -1,55 +1,34 @@
 import { Injectable } from '@angular/core';
+import { MockDataService, MockCompany } from './mock-data.service';
 
-export interface Company {
-  id: number;
-  name: string;
-  description: string;
-  logoUrl: string;
-}
+export type Company = MockCompany;
 
 @Injectable({
   providedIn: 'root'
 })
 export class CompanyService {
-  private companies: Company[] = [
-    {
-      id: 1,
-      name: 'Nintendo',
-      description: 'Japanese multinational consumer electronics company',
-      logoUrl: 'assets/logos/nintendo.png'
-    },
-    {
-      id: 2,
-      name: 'Sony',
-      description: 'Japanese multinational conglomerate corporation',
-      logoUrl: 'assets/logos/sony.png'
-    },
-    {
-      id: 3,
-      name: 'Sega',
-      description: 'Japanese multinational video game developer',
-      logoUrl: 'assets/logos/sega.png'
-    }
-  ];
+  constructor(private mockDataService: MockDataService) {}
 
-  private companyColors: { [key: string]: string } = {
-    'Nintendo': '#e60012',
-    'Sony': '#003791',
-    'Sega': '#0089CF',
-    'default': '#6B7280'
-  };
-
-  constructor() {}
-
-  getCompanies(): Company[] {
-    return this.companies;
+  async getCompanies(): Promise<Company[]> {
+    return this.mockDataService.getCompanies();
   }
 
-  getCompanyById(id: number): Company | undefined {
-    return this.companies.find(company => company.id === id);
+  async getCompany(id: string): Promise<Company | undefined> {
+    return this.mockDataService.getCompany(id);
   }
 
-  getCompanyColor(companyName: string): string {
-    return this.companyColors[companyName] || this.companyColors['default'];
+  getCompanyColor(company: Company): string {
+    const colors: { [key: string]: string } = {
+      'nintendo': '#E60012',  // Nintendo Red
+      'sony': '#003791',      // PlayStation Blue
+      'sega': '#00A0E9',      // SEGA Blue
+      'atari': '#E31D1A',     // Atari Red
+      'microsoft': '#107C10'  // Xbox Green
+    };
+    return colors[company.id] || '#3B82F6'; // Default to blue if company not found
+  }
+
+  getCompanyInitial(company: Company): string {
+    return company.name.charAt(0);
   }
 }
