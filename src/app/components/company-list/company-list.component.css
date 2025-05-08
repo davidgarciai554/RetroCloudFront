@@ -162,3 +162,33 @@
 .company-card:nth-child(6) { animation-delay: 0.6s; }
 .company-card:nth-child(7) { animation-delay: 0.7s; }
 .company-card:nth-child(8) { animation-delay: 0.8s; }
+
+.navbar {
+  width: 100%;
+  background: #181f2a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+.navbar-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+.navbar-links li a.active {
+  border-bottom: 2px solid #fff;
+}

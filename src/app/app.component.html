@@ -15,8 +15,7 @@
       <!-- User Menu -->
       <div class="flex items-center space-x-4">
         <!-- Upload Game (Admin Only) -->
-        <a *ngIf="authService.isAdmin()"
-           routerLink="/upload"
+        <a  *ngIf="authService.isAdmin()" routerLink="/upload"
            class="text-gray-300 hover:text-white px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
           <i class="fas fa-upload"></i>
           <span>Upload Game</span>
@@ -24,7 +23,7 @@
 
         <!-- User Info -->
         <div *ngIf="authService.currentUserValue" class="flex items-center space-x-2 text-gray-300">
-          <span>Welcome, {{ authService.currentUserValue.username }}</span>
+          <span>Welcome, {{ authService.currentUserValue?.username }}</span>
           <span class="px-2 py-1 rounded-full text-xs bg-gray-700">
             {{ authService.currentUserValue.role }}
           </span>

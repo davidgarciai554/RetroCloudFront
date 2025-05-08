@@ -15,6 +15,8 @@ import { UploadGameComponent } from './components/upload-game/upload-game.compon
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -62,7 +64,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     CommonModule
   ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

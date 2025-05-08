@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { ApiService } from '../../services/api.service';
+import { Token } from '../../models/api.models';
 import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,13 +21,14 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService,
-    private notificationService: NotificationService
+    private apiService: ApiService,
+    private notificationService: NotificationService,
+    private authService: AuthService // <--- Añade esto
   ) {
-    // Redirect if already logged in
-    if (this.authService.currentUserValue) {
-      this.router.navigate(['/companies']);
-    }
+    // Redirige si ya hay un token guardado
+    // if (localStorage.getItem('authToken')) {
+    //   this.router.navigate(['/companies']);
+    // }
 
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.required],
@@ -51,19 +54,29 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true;
-    const success = this.authService.login(
-      this.f['username'].value,
-      this.f['password'].value,
-      this.f['role'].value // Pass selected role to auth service
-    );
+    this.error = '';
 
-    if (success) {
-      this.notificationService.show('Login successful!', 'success');
-      this.router.navigate([this.returnUrl]);
-    } else {
-      this.error = 'Invalid username or password';
-      this.notificationService.show('Invalid username or password', 'error');
-      this.loading = false;
-    }
+    // Llama a la API real de login
+    this.apiService.login({
+      nombre: this.f['username'].value,
+      contraseña: this.f['password'].value
+    }).subscribe({
+      next: (token: Token) => {
+        this.loading = false;
+        localStorage.setItem('authToken', token.access_token);
+        this.authService.login(token.access_token); // <--- Notifica al AuthService
+        this.notificationService.show('¡Login exitoso!', 'success');
+        this.router.navigate([this.returnUrl]);
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err.status === 400) {
+          this.error = 'Usuario o contraseña incorrectos';
+        } else {
+          this.error = 'Ocurrió un error durante el inicio de sesión. Intenta de nuevo.';
+        }
+        this.notificationService.show(this.error, 'error');
+      }
+    });
   }
 }

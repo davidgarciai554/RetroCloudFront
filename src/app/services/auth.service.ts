@@ -1,59 +1,55 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
-export interface User {
-  username: string;
-  role: 'user' | 'admin';
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  private currentUserSubject = new BehaviorSubject<any>(this.getUserFromStorage());
+  public currentUser$ = this.currentUserSubject.asObservable();
+
+  constructor() {}
+
+  private getUserFromStorage() {
+    const token = localStorage.getItem('authToken');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        token,
+        username: payload.sub,
+        role: payload.role
+      };
+    } catch (e) {
+      return { token };
+    }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthService {
-  private currentUserSubject: BehaviorSubject<User | null>;
-  public currentUser: Observable<User | null>;
-
-  constructor(private router: Router) {
-    const savedUser = localStorage.getItem('currentUser');
-    this.currentUserSubject = new BehaviorSubject<User | null>(savedUser ? JSON.parse(savedUser) : null);
-    this.currentUser = this.currentUserSubject.asObservable();
+  login(token: string) {
+    localStorage.setItem('authToken', token);
+    this.currentUserSubject.next(this.getUserFromStorage());
   }
 
-  public get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
-  }
-
-  login(username: string, password: string, role: 'user' | 'admin' = 'user'): boolean {
-    // Mock authentication - in a real app, this would make an API call
-    if (username && password) {
-      const user: User = {
-        username,
-        role: role // Use the selected role instead of checking username
-      };
-
-      // Store user details in local storage
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      this.currentUserSubject.next(user);
-      
-      // Navigate to companies page after successful login
-      this.router.navigate(['/companies']);
-      return true;
-    }
-    return false;
-  }
-
-  logout(): void {
-    localStorage.removeItem('currentUser');
+  logout() {
+    localStorage.removeItem('authToken');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
-    return !!this.currentUserValue;
+    return this.currentUserSubject.value !== null;
   }
 
+  // Si necesitas saber si es admin, puedes decodificar el token y revisar el rol
   isAdmin(): boolean {
-    return this.currentUserValue?.role === 'admin';
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role === 'admin';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  get currentUserValue() {
+    return this.currentUserSubject.value;
   }
 }

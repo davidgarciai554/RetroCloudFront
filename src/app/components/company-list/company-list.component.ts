@@ -58,4 +58,24 @@ export class CompanyListComponent implements OnInit {
   getCompanyInitial(company: Company): string {
     return this.companyService.getCompanyInitial(company);
   }
+
+  logout() {
+    localStorage.removeItem('authToken');
+    this.router.navigate(['/login']);
+  }
+
+  isLastRowCentered(index: number, total: number): boolean {
+    const itemsPerRow = 3;
+    const lastRowStart = Math.floor((total - 1) / itemsPerRow) * itemsPerRow;
+    // Si está en la última fila y hay menos de 3 en esa fila
+    return index >= lastRowStart && total % itemsPerRow !== 0;
+  }
+
+  getRows(list: any[], itemsPerRow: number): any[][] {
+    const rows = [];
+    for (let i = 0; i < list.length; i += itemsPerRow) {
+      rows.push(list.slice(i, i + itemsPerRow));
+    }
+    return rows;
+  }
 }
