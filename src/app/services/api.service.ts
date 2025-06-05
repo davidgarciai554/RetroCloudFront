@@ -13,12 +13,13 @@ import {
   Consola,
   Juego
 } from '../models/api.models'; // Ajusta la ruta si es necesario
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8001'; // ¡Ajusta si tu backend corre en otro puerto/URL!
+  private baseUrl = environment.apiUrl; // Now uses the value from environment.ts
 
   constructor(private http: HttpClient) { }
 

@@ -1,31 +1,40 @@
 import { Injectable } from '@angular/core';
-import { MockDataService, MockCompany } from './mock-data.service';
+import { ApiService } from './api.service';
+import { Empresa } from '../models/api.models';
 
-export type Company = MockCompany;
+export interface Company {
+  id: string;
+  name: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class CompanyService {
-  constructor(private mockDataService: MockDataService) {}
+  constructor(private apiService: ApiService) {}
 
   async getCompanies(): Promise<Company[]> {
-    return this.mockDataService.getCompanies();
+    const empresas = await this.apiService.getEmpresas().toPromise() || [];
+    return empresas.map(e => ({
+      id: e.empresa_id,
+      name: e.empresa_nombre
+    }));
   }
 
   async getCompany(id: string): Promise<Company | undefined> {
-    return this.mockDataService.getCompany(id);
+    const companies = await this.getCompanies();
+    return companies.find(company => company.id === id);
   }
 
   getCompanyColor(company: Company): string {
     const colors: { [key: string]: string } = {
-      'nintendo': '#E60012',  // Nintendo Red
-      'sony': '#003791',      // PlayStation Blue
-      'sega': '#00A0E9',      // SEGA Blue
-      'atari': '#E31D1A',     // Atari Red
-      'microsoft': '#107C10'  // Xbox Green
+      'nintendo': '#E60012',
+      'sony': '#003791',
+      'sega': '#00A0E9',
+      'atari': '#E31D1A',
+      'microsoft': '#107C10'
     };
-    return colors[company.id] || '#3B82F6'; // Default to blue if company not found
+    return colors[company.id] || '#3B82F6';
   }
 
   getCompanyInitial(company: Company): string {

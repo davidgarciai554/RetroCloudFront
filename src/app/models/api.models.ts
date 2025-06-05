@@ -32,7 +32,8 @@ export interface UserRoleInfo {
 }
 
 export interface Empresa {
-  empresa_id: string; // Basado en que el backend devuelve c.NOMBRE
+  empresa_id: string;
+  empresa_nombre:string // Basado en que el backend devuelve c.NOMBRE
 }
 
 export interface Consola {
