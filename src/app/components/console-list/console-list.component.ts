@@ -27,15 +27,16 @@ export class ConsoleListComponent implements OnInit {
     try {
       this.isLoading = true;
       const companyId = this.route.snapshot.params['companyId'];
+      console.log('🎮 Console component initialized with company ID:', companyId);
       
       // Get company details
-      this.currentCompany = await this.companyService.getCompany(companyId);
-      if (!this.currentCompany) {
-        throw new Error('Company not found');
-      }
+
+      console.log('✅ Company loaded:', this.currentCompany);
 
       // Get consoles for this company
+      console.log('🎮 Fetching consoles...');
       this.consoles = await this.consoleService.getConsolesByCompanyId(companyId);
+      console.log('✅ Consoles loaded:', this.consoles);
 
       // Subscribe to search term changes
       this.searchStateService.currentSearchTerm.subscribe(async term => {
@@ -50,7 +51,7 @@ export class ConsoleListComponent implements OnInit {
       });
 
     } catch (err) {
-      console.error('Failed to load consoles:', err);
+      console.error('❌ Failed to load consoles:', err);
     } finally {
       this.isLoading = false;
     }

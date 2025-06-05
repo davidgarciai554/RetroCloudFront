@@ -65,4 +65,9 @@ export class ApiService {
       .set('consola_id', consolaId.toString());
     return this.http.get<Juego[]>(`${this.baseUrl}/juegos`, { params });
   }
+
+  // Endpoint: GET /juegos/{consola_id}
+  getJuegosPorConsola(consolaId: number): Observable<Juego[]> {
+    return this.http.get<Juego[]>(`${this.baseUrl}/juegos/${consolaId}`);
+  }
 }

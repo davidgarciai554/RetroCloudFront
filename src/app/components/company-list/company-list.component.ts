@@ -48,6 +48,8 @@ export class CompanyListComponent implements OnInit {
   }
 
   viewConsoles(company: Company) {
+    console.log('🏢 Navigating to consoles for company:', company);
+    console.log('🆔 Company ID:', company.id);
     this.router.navigate(['/company', company.id, 'consoles']);
   }
 

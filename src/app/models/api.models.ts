@@ -33,12 +33,18 @@ export interface UserRoleInfo {
 
 export interface Empresa {
   empresa_id: string;
-  empresa_nombre:string // Basado en que el backend devuelve c.NOMBRE
+  empresa_nombre: string; // Añadido punto y coma
 }
 
 export interface Consola {
   consola_id: number;
   nombre: string;
+}
+
+export interface Juego {
+  id: number;
+  nombre: string;
+  fecha_lanzamiento: string;
 }
 
 export interface Juego {

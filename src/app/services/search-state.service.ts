@@ -38,6 +38,26 @@ export class SearchStateService {
       };
     }
 
-    return this.mockDataService.searchAll(term);
+    // Get mock data and convert to proper types
+    const mockResults = await this.mockDataService.searchAll(term);
+    
+    return {
+      companies: mockResults.companies.map(c => ({
+        id: c.id,
+        name: c.name
+      })),
+      consoles: mockResults.consoles.map(c => ({
+        id: c.id,
+        name: c.name,
+        companyId: c.companyId
+      })),
+      games: mockResults.games.map(g => ({
+        id: g.id,
+        name: g.title,  // Map title to name
+        title: g.title,
+        releaseDate: '', // MockGame doesn't have releaseDate, so use empty string
+        consoleId: g.consoleId
+      }))
+    };
   }
 }
