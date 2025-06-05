@@ -23,17 +23,12 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private apiService: ApiService,
     private notificationService: NotificationService,
-    private authService: AuthService // <--- Añade esto
+    private authService: AuthService
   ) {
-    // Redirige si ya hay un token guardado
-    // if (localStorage.getItem('authToken')) {
-    //   this.router.navigate(['/companies']);
-    // }
-
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.required],
-      password: ['', Validators.required],
-      role: ['user', Validators.required] // Add role field with default value
+      password: ['', Validators.required]
+      // Removed role field
     });
   }
 
@@ -64,7 +59,7 @@ export class LoginComponent implements OnInit {
       next: (token: Token) => {
         this.loading = false;
         localStorage.setItem('authToken', token.access_token);
-        this.authService.login(token.access_token); // <--- Notifica al AuthService
+        this.authService.login(token.access_token);
         this.notificationService.show('¡Login exitoso!', 'success');
         this.router.navigate([this.returnUrl]);
       },

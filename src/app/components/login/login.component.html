@@ -1,6 +1,6 @@
-<div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-4">
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
   <!-- Logo -->
-  <div class="mb-8 text-center">
+  <div class="mb-32 text-center ml-4 mr-12">
     <div class="bg-gray-800 p-4 rounded-2xl mb-4 inline-block">
       <i class="fas fa-gamepad text-blue-500 text-4xl"></i>
     </div>
@@ -45,23 +45,6 @@
         </div>
       </div>
 
-      <!-- Role Selection -->
-      <div class="mb-6">
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <i class="fas fa-user-shield text-gray-500"></i>
-          </div>
-          <select formControlName="role"
-                  class="w-full bg-gray-700/50 text-gray-100 pl-12 pr-4 py-3 rounded-xl border border-gray-600/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200 appearance-none">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-          <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-            <i class="fas fa-chevron-down text-gray-500"></i>
-          </div>
-        </div>
-      </div>
-
       <!-- Error Message -->
       <div *ngIf="error" class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
         <p class="text-sm text-red-500">{{ error }}</p>
@@ -75,5 +58,12 @@
         <span>Sign in</span>
       </button>
     </form>
+    
+    <!-- Copyright Footer -->
+    <div class="mt-16 text-center">
+      <p class="text-gray-500 text-sm">
+        © 2025 RetroCloud - Creado por El Jotas y David
+      </p>
+    </div>
   </div>
 </div>
