@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['Silkscreen', 'monospace'],
+      },
       colors: {
         primary: {
           50: '#f0f9ff',
