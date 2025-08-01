@@ -98,4 +98,29 @@ export class ApiService {
       .set('consola_id', consolaId.toString());
     return this.http.get<Juego[]>(`${this.baseUrl}/juegos`, { params });
   }
+
+  // ========== NUEVOS ENDPOINTS GENERALES (SIN FILTRO DE RUTA) ==========
+  
+  // Endpoint: GET /consolas/all - Todas las consolas sin filtro
+  getAllConsolasGeneral(): Observable<Consola[]> {
+    return this.http.get<Consola[]>(`${this.baseUrl}/consolas/all`);
+  }
+
+  // Endpoint: GET /consolas/empresa/{empresa_id} - Consolas por empresa con filtro de ruta_nube
+  getConsolasPorEmpresaGeneral(empresaId: number): Observable<Consola[]> {
+    return this.http.get<Consola[]>(`${this.baseUrl}/consolas/empresa/${empresaId}`);
+  }
+
+  // Endpoint: GET /juegos/all/consola/{consola_id} - Juegos por consola sin filtro
+  getJuegosPorConsolaGeneral(consolaId: number): Observable<Juego[]> {
+    return this.http.get<Juego[]>(`${this.baseUrl}/juegos/all/consola/${consolaId}`);
+  }
+
+  // Endpoint: GET /search-general/all - Búsqueda general
+  searchGeneral(query: string, type: string = 'all'): Observable<any> {
+    let params = new HttpParams()
+      .set('q', query)
+      .set('type', type);
+    return this.http.get<any>(`${this.baseUrl}/search-general/all`, { params });
+  }
 }

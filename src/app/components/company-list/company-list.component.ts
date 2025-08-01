@@ -50,7 +50,16 @@ export class CompanyListComponent implements OnInit {
   viewConsoles(company: Company) {
     console.log('🏢 Navigating to consoles for company:', company);
     console.log('🆔 Company ID:', company.id);
-    this.router.navigate(['/company', company.id, 'consoles']);
+    console.log('🚀 Navigation route:', ['/company', company.id, 'consoles']);
+    
+    this.router.navigate(['/company', company.id, 'consoles']).then(
+      (success) => {
+        console.log('✅ Navigation successful:', success);
+      },
+      (error) => {
+        console.error('❌ Navigation failed:', error);
+      }
+    );
   }
 
   getCompanyColor(company: Company): string {

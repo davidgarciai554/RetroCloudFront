@@ -38,7 +38,10 @@ export interface Empresa {
 
 export interface Consola {
   consola_id: number;
-  nombre: string;
+  consola_nombre?: string;
+  nombre?: string; // Campo alternativo del backend
+  empresa_nombre?: string;
+  empresa_id?: number; // Opcional
 }
 
 export interface Juego {

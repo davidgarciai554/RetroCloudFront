@@ -2,34 +2,151 @@
   <!-- Header -->
   <div class="mb-8">
     <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
-      <h1 class="text-2xl font-bold text-gray-100 mb-2">Upload Game</h1>
-      <p class="text-gray-400">Add a new game to the RetroCloud collection</p>
+      <h1 class="text-2xl font-bold text-gray-100 mb-2">Upload Game Files</h1>
+      <p class="text-gray-400">Upload files for an existing game in the RetroCloud collection</p>
+      
+      <!-- Progress Steps -->
+      <div class="flex items-center mt-6 space-x-4">
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+               [class]="currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'">
+            1
+          </div>
+          <span class="ml-2 text-sm" [class]="currentStep >= 1 ? 'text-gray-100' : 'text-gray-400'">Select Console</span>
+        </div>
+        <div class="w-8 h-0.5" [class]="currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-600'"></div>
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+               [class]="currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'">
+            2
+          </div>
+          <span class="ml-2 text-sm" [class]="currentStep >= 2 ? 'text-gray-100' : 'text-gray-400'">Select Game</span>
+        </div>
+        <div class="w-8 h-0.5" [class]="currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-600'"></div>
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+               [class]="currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'">
+            3
+          </div>
+          <span class="ml-2 text-sm" [class]="currentStep >= 3 ? 'text-gray-100' : 'text-gray-400'">Upload Files</span>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Upload Form -->
   <div class="bg-gray-800 rounded-xl shadow-lg p-6">
     <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" class="space-y-8">
-      <!-- Console Selection -->
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-2">Select Console</label>
+      
+      <!-- Step 1: Console Selection -->
+      <div *ngIf="currentStep === 1">
+        <label class="block text-sm font-medium text-gray-400 mb-2">Step 1: Select Console</label>
         <div class="relative">
-          <select formControlName="consoleId"
-                  class="w-full bg-gray-700/50 text-gray-100 pl-4 pr-10 py-3 rounded-xl border border-gray-600/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200 appearance-none">
-            <option value="">Select a console</option>
-            <option *ngFor="let console of consoles" [value]="console.id">
-              {{ console.name }}
-            </option>
-          </select>
+          <!-- Search Input -->
+          <input 
+            type="text"
+            [(ngModel)]="consoleSearchTerm"
+            (input)="filterConsoles()"
+            (focus)="showConsoleDropdown = true"
+            placeholder="Buscar consola..."
+            class="w-full bg-gray-700/50 text-gray-100 pl-4 pr-10 py-3 rounded-xl border border-gray-600/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200">
+          
+          <!-- Dropdown Icon -->
           <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-            <i class="fas fa-chevron-down text-gray-500"></i>
+            <i class="fas fa-search text-gray-500"></i>
+          </div>
+          
+          <!-- Dropdown List -->
+          <div *ngIf="showConsoleDropdown && filteredConsoles.length > 0" 
+               class="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div *ngFor="let console of filteredConsoles" 
+                 (click)="selectConsole(console)"
+                 class="px-4 py-3 hover:bg-gray-600 cursor-pointer text-gray-100 border-b border-gray-600 last:border-b-0">
+              {{ console.consola_nombre }}
+            </div>
+          </div>
+          
+          <!-- No results message -->
+          <div *ngIf="showConsoleDropdown && filteredConsoles.length === 0 && consoleSearchTerm" 
+               class="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-xl shadow-lg">
+            <div class="px-4 py-3 text-gray-400 text-center">
+              No se encontraron consolas
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- File Upload Area -->
-      <div>
-        <label class="block text-sm font-medium text-gray-400 mb-2">Game File</label>
+      <!-- Step 2: Game Selection -->
+      <div *ngIf="currentStep === 2">
+        <div class="mb-4">
+          <div class="flex items-center justify-between">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Step 2: Select Game from {{ selectedConsole?.consola_nombre }}</label>
+            <button type="button" (click)="goBack()" 
+                    class="text-gray-400 hover:text-white px-3 py-1 rounded-lg transition-colors duration-200 flex items-center space-x-1">
+              <i class="fas fa-arrow-left"></i>
+              <span>Atrás</span>
+            </button>
+          </div>
+        </div>
+        
+        <div *ngIf="isLoading" class="text-center py-8">
+          <div class="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p class="text-gray-400">Loading games...</p>
+        </div>
+        
+        <div *ngIf="!isLoading && games.length > 0" class="relative">
+          <!-- Search Input -->
+          <input 
+            type="text"
+            [(ngModel)]="gameSearchTerm"
+            (input)="filterGames()"
+            (focus)="showGameDropdown = true"
+            placeholder="Buscar videojuego..."
+            class="w-full bg-gray-700/50 text-gray-100 pl-4 pr-10 py-3 rounded-xl border border-gray-600/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200">
+          
+          <!-- Dropdown Icon -->
+          <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+            <i class="fas fa-search text-gray-500"></i>
+          </div>
+          
+          <!-- Dropdown List -->
+          <div *ngIf="showGameDropdown && filteredGames.length > 0" 
+               class="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div *ngFor="let game of filteredGames" 
+                 (click)="selectGame(game)"
+                 class="px-4 py-3 hover:bg-gray-600 cursor-pointer text-gray-100 border-b border-gray-600 last:border-b-0">
+              {{ game.name }}
+            </div>
+          </div>
+          
+          <!-- No results message -->
+          <div *ngIf="showGameDropdown && filteredGames.length === 0 && gameSearchTerm" 
+               class="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-xl shadow-lg">
+            <div class="px-4 py-3 text-gray-400 text-center">
+              No se encontraron videojuegos
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!isLoading && games.length === 0" class="text-center py-8">
+          <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+          <p class="text-gray-400">No games found for this console.</p>
+        </div>
+      </div>
+
+      <!-- Step 3: File Upload Area -->
+      <div *ngIf="currentStep === 3">
+        <div class="mb-4">
+          <div class="flex items-center justify-between">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Step 3: Upload Files for "{{ selectedGame?.name }}"</label>
+            <button type="button" (click)="goBack()" 
+                    class="text-gray-400 hover:text-white px-3 py-1 rounded-lg transition-colors duration-200 flex items-center space-x-1">
+              <i class="fas fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+          </div>
+        </div>
+        
         <div class="border-2 border-dashed border-gray-600/50 rounded-xl p-8"
              (dragover)="onDragOver($event)"
              (drop)="onFilesDrop($event)">
@@ -38,11 +155,12 @@
             <div class="bg-gray-700/50 inline-flex p-6 rounded-xl mb-4">
               <i class="fas fa-upload text-4xl text-gray-400"></i>
             </div>
-            <p class="text-gray-300 text-lg mb-2">Drag and drop your game file here</p>
+            <p class="text-gray-300 text-lg mb-2">Drag and drop your game files here</p>
             <p class="text-gray-500 mb-4">or</p>
             <input type="file" 
                    #fileInput
                    (change)="onFileSelect($event)"
+                   multiple
                    class="hidden">
             <button type="button"
                     (click)="fileInput.click()"
@@ -53,15 +171,20 @@
           </div>
         </div>
 
-        <!-- Selected File -->
-        <div *ngIf="selectedFiles.length > 0" class="mt-4">
-          <div class="bg-gray-700/50 rounded-xl px-4 py-3 flex items-center justify-between">
+        <!-- Selected Files -->
+        <div *ngIf="selectedFiles.length > 0" class="mt-4 space-y-2">
+          <h4 class="text-sm font-medium text-gray-400 mb-2">Selected Files ({{ selectedFiles.length }})</h4>
+          <div *ngFor="let file of selectedFiles; let i = index" 
+               class="bg-gray-700/50 rounded-xl px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-              <i class="fas fa-file-archive text-blue-500"></i>
-              <span class="text-gray-300">{{ selectedFiles[0].name }}</span>
+              <i class="fas fa-file text-blue-500"></i>
+              <div>
+                <span class="text-gray-300 block">{{ file.name }}</span>
+                <span class="text-gray-500 text-sm">{{ (file.size / 1024 / 1024).toFixed(2) }} MB</span>
+              </div>
             </div>
             <button type="button"
-                    (click)="removeFile(0)"
+                    (click)="removeFile(i)"
                     class="text-gray-400 hover:text-red-500 p-2 rounded-lg transition-colors duration-200">
               <i class="fas fa-times"></i>
             </button>
@@ -76,12 +199,12 @@
       </div>
 
       <!-- Submit Button -->
-      <div class="flex justify-end">
+      <div *ngIf="currentStep === 3" class="flex justify-end">
         <button type="submit"
-                [disabled]="uploadForm.invalid || selectedFiles.length === 0 || isLoading"
+                [disabled]="uploadForm.invalid || selectedFiles.length === 0 || isLoading || !selectedGame"
                 class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white px-8 py-3 rounded-xl transition-colors duration-200 flex items-center space-x-2 disabled:cursor-not-allowed">
           <i class="fas fa-cloud-upload-alt"></i>
-          <span>Upload Game</span>
+          <span>Upload Files</span>
           <div *ngIf="isLoading" class="ml-2 animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
         </button>
       </div>

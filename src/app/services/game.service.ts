@@ -19,14 +19,15 @@ export class GameService {
   async getGamesByConsoleId(consoleId: string): Promise<Game[]> {
     try {
       console.log('🎮 Fetching games for console ID:', consoleId);
-      console.log('🌐 API URL will be:', `http://127.0.0.1:8000/juegos/${consoleId}`);
+      console.log('🌐 API URL will be:', `http://127.0.0.1:8000/juegos/all/consola/${consoleId}`);
       
       const consolaId = parseInt(consoleId);
       if (isNaN(consolaId)) {
         throw new Error(`Invalid console ID: ${consoleId}`);
       }
       
-      const juegos = await this.apiService.getJuegosPorConsola(consolaId).toPromise();
+      // Usar el nuevo endpoint que no filtra por ruta
+      const juegos = await this.apiService.getJuegosPorConsolaGeneral(consolaId).toPromise();
       console.log('📦 API Response:', juegos);
       
       if (!juegos || !Array.isArray(juegos)) {
@@ -38,7 +39,7 @@ export class GameService {
         id: j.id.toString(),
         name: j.nombre,
         title: j.nombre,  // Add this line - use the same value as name
-        releaseDate: j.fecha_lanzamiento,
+        releaseDate: j.fecha_lanzamiento || '',
         consoleId: consoleId
       }));
       
@@ -57,8 +58,9 @@ export class GameService {
 
   async getAllGames(): Promise<Game[]> {
     try {
-      // For now, return empty array until we implement the full API
-      // You could also call a general games endpoint here
+      console.log('🎮 Fetching all games');
+      // Por ahora retornamos array vacío hasta implementar endpoint general de juegos
+      // Podrías implementar un endpoint /juegos/all en el backend si lo necesitas
       return [];
     } catch (error) {
       console.error('❌ Error fetching all games:', error);

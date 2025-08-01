@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { ConsoleService, Console } from '../../services/console.service';
+import { ConsoleService } from '../../services/console.service';
 import { CompanyService, Company } from '../../services/company.service';
 import { SearchStateService } from '../../services/search-state.service';
+import { Consola } from '../../models/api.models';
 
 @Component({
   selector: 'app-console-list',
   templateUrl: './console-list.component.html'
 })
 export class ConsoleListComponent implements OnInit {
-  consoles: Console[] = [];
+  consoles: Consola[] = [];
   currentCompany?: Company;
   isLoading = true;
 
@@ -24,41 +25,48 @@ export class ConsoleListComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.isLoading = true;
     try {
-      this.isLoading = true;
-      const companyId = this.route.snapshot.params['companyId'];
-      console.log('🎮 Console component initialized with company ID:', companyId);
+      const companyId = this.route.snapshot.paramMap.get('companyId');
+      console.log('🔍 ConsoleListComponent - Company ID from route:', companyId);
       
-      // Get company details
+      if (!companyId) {
+        console.warn('⚠️ No company ID found in route, redirecting to companies');
+        this.router.navigate(['/companies']);
+        return;
+      }
 
-      console.log('✅ Company loaded:', this.currentCompany);
-
-      // Get consoles for this company
-      console.log('🎮 Fetching consoles...');
+      // Load company info
+      console.log('📋 Loading company info for ID:', companyId);
+      this.currentCompany = await this.companyService.getCompany(companyId);
+      console.log('🏢 Current company loaded:', this.currentCompany);
+      
+      // Load consoles
+      console.log('🎮 Loading consoles for company ID:', companyId);
       this.consoles = await this.consoleService.getConsolesByCompanyId(companyId);
-      console.log('✅ Consoles loaded:', this.consoles);
+      console.log('📦 Consoles loaded:', this.consoles);
 
       // Subscribe to search term changes
       this.searchStateService.currentSearchTerm.subscribe(async term => {
         if (term) {
           const results = await this.searchStateService.searchAll(term);
           this.consoles = results.consoles.filter(console => 
-            console.companyId === companyId
+            console.empresa_id === parseInt(companyId)
           );
         } else {
           this.consoles = await this.consoleService.getConsolesByCompanyId(companyId);
         }
       });
 
-    } catch (err) {
-      console.error('❌ Failed to load consoles:', err);
+    } catch (error) {
+      console.error('Error loading consoles:', error);
     } finally {
       this.isLoading = false;
     }
   }
 
-  viewGames(console: Console) {
-    this.router.navigate(['/console', console.id, 'games']);
+  viewGames(console: Consola) {
+    this.router.navigate(['/console', console.consola_id, 'games']);
   }
 
   getCompanyColor(): string {
@@ -67,7 +75,7 @@ export class ConsoleListComponent implements OnInit {
       '#3B82F6';
   }
 
-  goBack(): void {
+  goBack() {
     this.location.back();
   }
 }
